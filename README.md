@@ -1,4 +1,4 @@
-# p3-endless-scene-starter
+# Succulent and Cactus Generator
 
-Credit: Adam Smith/Isaac Karth 
-Edited by: Asiiah Song
+Credit: Andy Eng
+
