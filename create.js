@@ -5,27 +5,53 @@ let column;
 let row;
 let type;
 let tileList;
+let cam1;
+let xPosSlider;
+let yPosSlider;
+let zPosSlider;
+let camTilt;
 
 function setup() {
     let canvas = createCanvas(800, 800, WEBGL);
-
     tileList = [];
-    tileSize = 20;
+    tileSize = 160;
     column = Math.ceil(height / tileSize);
     row = Math.ceil(width / tileSize);
+    cam1 = createCamera();
+
+    xPosSlider = createSlider(-5000, 5000, 0);
+    xPosSlider.position(900, 40);
     
+    yPosSlider = createSlider(-5000, 5000, 0);
+    yPosSlider.position(900, 70);
+    
+    zPosSlider = createSlider(-5000, 5000, 0);
+    zPosSlider.position(900, 100);
+
+    // camTilt = createSlider(-90, 90, 10);
+    // camTilt.position(900, 130);
 }
 
 function draw() {
     orbitControl();
-    background(0);
-    stroke(255);
-    fill("#111111")
+    // let currX = xPosSlider.value();
+    // let currY = yPosSlider.value();
+    // let currZ = zPosSlider.value();
+    // // let tilter = camTilt.value();
+    // cam1.setPosition(currX, currY, currZ);
+    // // cam1.lookAt(0, 0, 0);
 
+    background("#e685ef");
+    stroke(0);
+    fill("#1d2add")
+    push();
+    translate(0, 0, -500);
+    box(8000, 8000, 1000);
+    pop();
   
     
-    for (let i = -200; i <= 200; i+= tileSize) {
-        for (let k = -200; k <= 200; k+= tileSize) {
+    for (let i = -1600; i <= 1600; i+= tileSize) {
+        for (let k = -1600; k <= 1600; k+= tileSize) {
            fillPlane(k, i);
     }
 
@@ -34,23 +60,23 @@ function draw() {
 
     function fillPlane(x, y) {
         push();
-        translate(x, y, noise(x, y) * 200 / 2);
-        if (noise(x, y) > 0.8) {
+        translate(x, y, noise(x, y) * 800 / 2);
+        if (noise(x, y) > 0.775) {
             fill("#00FF00");
-            box(20, 20, noise(x, y) * 200);
+            box(160, 160, noise(x, y) * 800);
         } else {
-        for (let i = -200; i <= 200; i+= tileSize){
-            if (noise(i, y) > 0.8) {
+        for (let i = -1600; i <= 1600; i+= tileSize){
+            if (noise(i, y) > 0.775) {
                 fill("#00FF00");
-                box(20, 20, noise(x, y) * 200);
+                box(160, 160, noise(x, y) * 800);
             } else {
                 fill("#FFFF00");
             }
         }
-        for (let k = -200; k <= 200; k+= tileSize){
-            if (noise(x, k) > 0.8) {
+        for (let k = -1600; k <= 1600; k+= tileSize){
+            if (noise(x, k) > 0.775) {
                 fill("#00FF00");
-                box(20, 20, noise(x, y) * 200);
+                box(160, 160, noise(x, y) * 800);
             } else {
                 fill("#FFFF00");
             }
