@@ -18,28 +18,34 @@ function setup() {
     column = Math.ceil(height / tileSize);
     row = Math.ceil(width / tileSize);
     cam1 = createCamera();
+    
 
     xPosSlider = createSlider(-5000, 5000, 0);
     xPosSlider.position(900, 40);
+    fill(0);
+    text('X', 870, 40);
     
-    yPosSlider = createSlider(-5000, 5000, 0);
+    yPosSlider = createSlider(-5000, 5000, 3000);
     yPosSlider.position(900, 70);
+    fill(0);
+    text('Y', 870, 70);
     
-    zPosSlider = createSlider(-5000, 5000, 0);
+    zPosSlider = createSlider(-5000, 5000, 3500);
     zPosSlider.position(900, 100);
+    fill(0);
+    text('Z', 870, 1000);
 
     // camTilt = createSlider(-90, 90, 10);
     // camTilt.position(900, 130);
 }
 
 function draw() {
-    orbitControl();
-    // let currX = xPosSlider.value();
-    // let currY = yPosSlider.value();
-    // let currZ = zPosSlider.value();
-    // // let tilter = camTilt.value();
-    // cam1.setPosition(currX, currY, currZ);
-    // // cam1.lookAt(0, 0, 0);
+    // orbitControl();
+    let currX = xPosSlider.value();
+  let currY = yPosSlider.value();
+  let currZ = zPosSlider.value();
+    cam1.setPosition(currX, currY, currZ);
+    cam1.lookAt(0, 0, 0);
 
     background("#e685ef");
     stroke(0);
