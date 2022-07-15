@@ -24,8 +24,8 @@ function draw() {
 
   
     
-    for (let i = -400; i <= 400; i+= tileSize) {
-        for (let k = -400; k <= 400; k+= tileSize) {
+    for (let i = -200; i <= 200; i+= tileSize) {
+        for (let k = -200; k <= 200; k+= tileSize) {
            fillPlane(k, i);
     }
 
@@ -34,27 +34,29 @@ function draw() {
 
     function fillPlane(x, y) {
         push();
-        translate(x, y);
+        translate(x, y, noise(x, y) * 200 / 2);
         if (noise(x, y) > 0.8) {
             fill("#00FF00");
-            box(20, 20, 20);
+            box(20, 20, noise(x, y) * 200);
         } else {
-        for (let i = -400; i <= 400; i+= tileSize){
+        for (let i = -200; i <= 200; i+= tileSize){
             if (noise(i, y) > 0.8) {
                 fill("#00FF00");
-                box(20, 20, 20);
-                break
+                box(20, 20, noise(x, y) * 200);
+            } else {
+                fill("#FFFF00");
             }
         }
-        for (let k = -400; k <= 400; k+= tileSize){
+        for (let k = -200; k <= 200; k+= tileSize){
             if (noise(x, k) > 0.8) {
                 fill("#00FF00");
-                box(20, 20, 20);
-                break
+                box(20, 20, noise(x, y) * 200);
+            } else {
+                fill("#FFFF00");
             }
         }
         }
-        pop();
+    pop();
     }
 
     // rotateX(80);
