@@ -1,95 +1,166 @@
 "use strict";
 
-let tileSize;
+const tileSize = 10;
 let column;
 let row;
 let type;
-let tileList;
+let tileX;
+let tileY;
 let cam1;
-let xPosSlider;
-let yPosSlider;
-let zPosSlider;
 let camTilt;
+let scaler;
+let seed = 1000;
 
 function setup() {
     let canvas = createCanvas(800, 800, WEBGL);
-    tileList = [];
-    tileSize = 160;
-    column = Math.ceil(height / tileSize);
-    row = Math.ceil(width / tileSize);
-    cam1 = createCamera();
-    
+    canvas.parent("container");
 
-    xPosSlider = createSlider(-5000, 5000, 0);
+    let label = createP();
+    label.html("World Seed: ");
+    label.parent("container");
+
+    let rand = Math.random().toString().substr(2, 8);
+
+    let input = createInput(rand);
+    input.parent(label);
+    input.input(() => {
+        rebuildWorld(input.value());
+    });
+    
+    let xPosSlider = createSlider(-5000, 5000, 0);
     xPosSlider.position(900, 40);
     fill(0);
     text('X', 870, 40);
-    
-    yPosSlider = createSlider(-5000, 5000, 3000);
+    let yPosSlider = createSlider(-5000, 5000, 3000);
     yPosSlider.position(900, 70);
     fill(0);
     text('Y', 870, 70);
-    
-    zPosSlider = createSlider(-5000, 5000, 3500);
+    let zPosSlider = createSlider(-5000, 5000, 3500);
     zPosSlider.position(900, 100);
     fill(0);
     text('Z', 870, 1000);
-
     // camTilt = createSlider(-90, 90, 10);
     // camTilt.position(900, 130);
+
+    tileX = [];
+    tileY = [];
+    column = Math.ceil(height / tileSize);
+    row = Math.ceil(width / tileSize);
+    cam1 = createCamera();
+
+    // createP("Arrow keys scroll. Clicking changes tiles.").parent("container");
+    rebuildWorld(input.value());
 }
 
+function rebuildWorld(key) {
+    tileX = [];
+    tileY = [];
+    noiseSeed(key);
+    randomSeed(key);
+  }
+
 function draw() {
-    // orbitControl();
-    let currX = xPosSlider.value();
-  let currY = yPosSlider.value();
-  let currZ = zPosSlider.value();
-    cam1.setPosition(currX, currY, currZ);
-    cam1.lookAt(0, 0, 0);
+    randomSeed(seed);
+
+    orbitControl();
+    // let currX = xPosSlider.value();
+    // let currY = yPosSlider.value();
+    // let currZ = zPosSlider.value();
+    // cam1.setPosition(currX, currY, currZ);
+    // cam1.lookAt(0, 0, 0);
 
     background("#e685ef");
     stroke(0);
     fill("#1d2add")
     push();
     translate(0, 0, -500);
-    box(8000, 8000, 1000);
+    // box(2000, 2000, 1000);
     pop();
   
     
-    for (let i = -1600; i <= 1600; i+= tileSize) {
-        for (let k = -1600; k <= 1600; k+= tileSize) {
-           fillPlane(k, i);
-    }
-
+    for (let i = -10; i <= 10; i+= 1) {
+        for (let k = -40; k <= 40; k+= 1) {
+                fillPlane(k * tileSize, i * tileSize);
+        }
     }
 }
 
     function fillPlane(x, y) {
         push();
-        translate(x, y, noise(x, y) * 800 / 2);
-        if (noise(x, y) > 0.775) {
-            fill("#00FF00");
-            box(160, 160, noise(x, y) * 800);
+        if ((tileX.includes(x) || tileY.includes(y)) && noise(x, y) < 0.8) {
+            
+        
         } else {
-        for (let i = -1600; i <= 1600; i+= tileSize){
-            if (noise(i, y) > 0.775) {
+            // streets
+            if (noise(x, y) >= 0.8) {
+                stroke(255);
+                fill("#000000");
+                if (Math.sign(y) < 0) {
+                    translate(x, 0, 0);
+                    box(tileSize, tileSize * 21, tileSize);
+                    translate(-x, 0, 0);
+                    tileX.push(x);
+                }
+                if (x < 70 && x > -70) {
+                    translate(0, y, 0);
+                    box(tileSize * 81, tileSize, tileSize);
+                    translate(0, -y, 0);
+                    tileY.push(y);
+                }
+            } else 
+            if (noise(x, y) > 0.5) {
+                scaler = ((400 - Math.abs(x % 800)) * random()) / 10;
+                translate(x, y, scaler / 2 - tileSize);
+                fill("#FF0000");
+                box(tileSize, tileSize, scaler);
+            } else 
+            // sinking terrain
+            if (noise(x, y) > 0.20) {
+                translate(x, y, -10 * noise(x, y));
+                fill("#0000FF");
+                box(tileSize, tileSize, tileSize);
+            } else {   
+            // skyscraper
+                scaler = (400 - Math.abs(x % 800)) * noise(x, y);
+                translate(x, y, scaler / 2);
                 fill("#00FF00");
-                box(160, 160, noise(x, y) * 800);
-            } else {
-                fill("#FFFF00");
+                box(tileSize, tileSize, scaler);
             }
+            
+            
+            
         }
-        for (let k = -1600; k <= 1600; k+= tileSize){
-            if (noise(x, k) > 0.775) {
-                fill("#00FF00");
-                box(160, 160, noise(x, y) * 800);
-            } else {
-                fill("#FFFF00");
-            }
-        }
-        }
-    pop();
+        pop();
     }
+
+    function drawStreet(x, y) {
+        
+            if (tileX.includes(x)) {
+                
+            }
+            if (tileY.includes(y)) {
+               
+                
+            }
+    }
+     //  else {
+        // for (let i = -1600; i <= 1600; i+= tileSize){
+        //     if (noise(i, y) > 0.775) {
+        //         fill("#00FF00");
+        //         box(tileSize, tileSize, noise(x, y) * 800);
+        //     } else {
+        //         fill("#FFFF00");
+        //     }
+        // }
+        // for (let k = -1600; k <= 1600; k+= tileSize){
+        //     if (noise(x, k) > 0.775) {
+        //         fill("#00FF00");
+        //         box(tileSize, tileSize, noise(x, y) * 800);
+        //     } else {
+        //         fill("#FFFF00");
+        //     }
+        // }
+        // }
 
     // rotateX(80);
     // translate(-width, -height);
