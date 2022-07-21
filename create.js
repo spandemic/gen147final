@@ -1,5 +1,9 @@
 "use strict";
 
+// seeds
+// bugged street gen 21262415
+// twin towers 53157679
+
 const tileSize = 10;
 let column;
 let row;
@@ -71,15 +75,15 @@ function draw() {
 
     background("#e685ef");
     stroke(0);
-    fill("#1d2add")
+    fill("#4F3107")
     push();
-    translate(0, 0, -500);
-    // box(2000, 2000, 1000);
+    translate(0, 0, -50);
+    box(1000, 400, 100);
     pop();
   
     
-    for (let i = -10; i <= 10; i+= 1) {
-        for (let k = -40; k <= 40; k+= 1) {
+    for (let i = -20; i <= 20; i+= 1) {
+        for (let k = -50; k <= 50; k+= 1) {
                 fillPlane(k * tileSize, i * tileSize);
         }
     }
@@ -87,62 +91,132 @@ function draw() {
 
     function fillPlane(x, y) {
         push();
+
+        // checks if this row/column contains a street intersection
         if ((tileX.includes(x) || tileY.includes(y)) && noise(x, y) < 0.8) {
-            
         
         } else {
             // streets
-            if (noise(x, y) >= 0.8) {
-                stroke(255);
+            if (noise(x, y) >= 0.8 && (y < 160 && y > -160) && (x < 440 && x > -440)) {
+                stroke("#F5C422");
                 fill("#000000");
                 if (Math.sign(y) < 0) {
                     translate(x, 0, 0);
-                    box(tileSize, tileSize * 21, tileSize);
+                    box(tileSize, tileSize * 36, tileSize);
                     translate(-x, 0, 0);
                     tileX.push(x);
                 }
-                if (x < 70 && x > -70) {
+                if (x < 90 && x > -90) {
                     translate(0, y, 0);
-                    box(tileSize * 81, tileSize, tileSize);
+                    box(tileSize * 92, tileSize, tileSize);
                     translate(0, -y, 0);
                     tileY.push(y);
+                } else {
+                    stroke(255); // cars
+                    fill("#FF0000");
+                    translate(x, y, tileSize * 3 / 4);
+                    box(tileSize / 2, tileSize / 2, tileSize / 2);
                 }
             } else 
-            if (noise(x, y) > 0.5) {
-                scaler = ((400 - Math.abs(x % 800)) * random()) / 10;
-                translate(x, y, scaler / 2 - tileSize);
-                fill("#FF0000");
-                box(tileSize, tileSize, scaler);
+
+            // mid-size building
+            if (noise(x, y) > 0.6 && (y < 160 && y > -160) && (x < 440 && x > -440)) {
+                
+                scaler = ((400 - Math.abs(x % 800)) * noise(x,y)) / 10 + 20;
+                
+                if (noise(x + tileSize, y) < 0.6 && noise(x - tileSize, y) < 0.6 && noise(x, y + tileSize) < 0.6 && noise(x, y - tileSize) < 0.6) {
+                    if (random() < 0.5) {
+                        // cone building
+                        translate(x, y, scaler / 2 + tileSize);
+                        rotateX(HALF_PI);
+                        stroke("#3B1D00");
+                        fill("#8A0714");
+                        cone(tileSize / 2, scaler + 10, 4, 2);
+                        rotateX(-HALF_PI);
+                        box(tileSize, tileSize, -8 * noise(x, y));
+                        translate(0, 0, -scaler/2 - tileSize);
+                        noStroke();
+                        fill("#292f33")
+                        box(tileSize, tileSize, tileSize);
+                    } else {
+                        // gray triangle building
+                        translate(x, y, 0);
+                        noStroke();
+                        fill("#292f33")
+                        box(tileSize, tileSize, tileSize);
+                        translate(-x, -y, 0);
+
+                        fill("#B8451A");
+                        stroke("#382119");
+                        translate(x, y, scaler / 2);
+                        rotateX(HALF_PI);
+                        rotateY(noise(x, y) * 360);
+                        cylinder(tileSize / 2, scaler , 4, 1);
+                        
+                    }
+                } else {
+                    // pink building
+                    fill("#1AB898");
+                    stroke("#193832");
+                    translate(x, y, scaler / 2);
+                    box(tileSize, tileSize, scaler);
+
+                    if (random() < 0.3) {
+                        rotateX(HALF_PI);
+                        rotateY(QUARTER_PI);
+                        translate(0, scaler / 2 + tileSize / 2, 0);
+                        cone(tileSize / 2, tileSize, 5, 1);
+                    } else {
+
+                    }
+                    
+                }
             } else 
-            // sinking terrain
-            if (noise(x, y) > 0.20) {
-                translate(x, y, -10 * noise(x, y));
-                fill("#0000FF");
-                box(tileSize, tileSize, tileSize);
-            } else {   
+
             // skyscraper
-                scaler = (400 - Math.abs(x % 800)) * noise(x, y);
-                translate(x, y, scaler / 2);
-                fill("#00FF00");
-                box(tileSize, tileSize, scaler);
+            if (noise(x, y) > 0.59 && (y < 160 && y > -160) && (x < 440 && x > -440)) {
+                stroke(255);
+                scaler = (200 - Math.abs(x % 800)) * noise(x, y) + 20 / 4;
+                if (Math.sign(scaler) > 0) {
+                    translate(x, y, scaler / 2);
+                    fill("#099BEB");
+                    box(tileSize, tileSize, scaler);
+                } else {
+                    // cell tower
+                    scaler = random(50, 150);
+                    translate(x, y, scaler / 2);
+                    noFill();
+                    rotateX(HALF_PI);
+                    cone(tileSize / 2, scaler, 4, 1);
+                }
+                
+            } else 
+            {  
+                // ground
+                noStroke();
+                if (x > 440 || x < -440 || y > 160 || y < -160) {
+                    fill("#2A6A01");
+                    scaler = -8;
+                } else if (x > 340 || x < -340 || y > 100 || y < -100){
+                    if (random() < 0.5) {
+                        fill("#292f33");
+                    } else {
+                        fill(0, random(25, 180), 0, random(200, 255));
+                    }
+                    scaler = 2;
+                } else {
+                    fill(0, random(25, 180), 0, random(200, 255));
+                    scaler = 8;
+                }
+                translate(x, y, scaler * noise(x, y));
+                
+                box(tileSize, tileSize, tileSize);
             }
-            
-            
-            
+             
         }
         pop();
     }
 
-    function drawStreet(x, y) {
-        
-            if (tileX.includes(x)) {
-                
-            }
-            if (tileY.includes(y)) {
-               
-                
-            }
-    }
      //  else {
         // for (let i = -1600; i <= 1600; i+= tileSize){
         //     if (noise(i, y) > 0.775) {
