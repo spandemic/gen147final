@@ -123,7 +123,7 @@ function rebuildWorld(key) {
 
 function draw() {
     randomSeed(seed);
-    // orbitControl();
+    orbitControl();
     cam1.lookAt(0, 0, 0);
     if (numCam === 0) {
         setCamera(cam1);
@@ -159,6 +159,8 @@ function draw() {
 
     function fillPlane(x, y) {
         push();
+
+        // % based chance spawning for buildings
         chance = 0;
         if (tileX.includes(x + tileSize) || tileX.includes(x - tileSize) || tileY.includes(y + tileSize) || tileY.includes(y - tileSize)) {
             chance += 0.2;
@@ -170,6 +172,7 @@ function draw() {
         } else {
             chance -= 0.1;
         }
+        
         // checks if this row/column contains a street intersection
         if ((tileX.includes(x) || tileY.includes(y)) && noise(x, y) < 0.8) {
             
@@ -224,7 +227,7 @@ function draw() {
                         fill("#292f33")
                         box(tileSize, tileSize, tileSize);
                     } else {
-                        // gray triangle building
+                        // orange triangle building
                         translate(x, y, 0);
                         noStroke();
                         fill("#292f33")
@@ -241,7 +244,7 @@ function draw() {
                     }
                 } else {
                     scaler *= random(0.5, 2);
-                    // pink build
+                    // square build
                     if (noise(x, y) < 0.7) {
                         fill("#1AB898");
                         stroke("#193832");
@@ -255,8 +258,9 @@ function draw() {
                         cone(tileSize / 2, tileSize, 5, 1);
                         }
                     } else if (noise(x, y) > 0.7) {
-                        fill("#1AB898");
-                        stroke("#193832");
+                        // cylinder
+                        fill("#076B57");
+                        stroke("#6B1D00");
                         rotateX(HALF_PI);
                         translate(x, scaler / 2, y);
                         cylinder(tileSize / 2, scaler, 8, 1);
