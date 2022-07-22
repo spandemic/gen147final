@@ -1,9 +1,8 @@
 "use strict";
 
-// seeds
-// bugged street gen 21262415
-// twin towers 53157679
-// lotta buildings 79978841
+// cool seeds PS these do not work, seed function does not function
+// no street quad tower : 11758247
+// twin tower ; 13295945
 
 const tileSize = 10;
 let column;
@@ -16,23 +15,30 @@ let cam2;
 let cam3;
 let cam4;
 let cam5;
-let camTilt;
 let scaler;
-let seed = 1000;
+let seed = 12345;
 let chance = 0;
 let rand;
 let movingCar;
 let currentSeed;
 let seedValue;
-let xPosSlider;
-let yPosSlider;
-let zPosSlider;
+// let xPosSlider;
+// let yPosSlider;
+// let zPosSlider;
 let cx;
 let cy;
 let cz;
 let numCam = 0;
 let a;
 let b;
+let tileCounter;
+let myFont;
+let bg;
+
+function preload() {
+    myFont = loadFont("./assets/warriot.otf");
+    bg = loadImage("./assets/clouds.jpg");
+}
 
 function setup() {
     let canvas = createCanvas(800, 800, WEBGL);
@@ -65,37 +71,46 @@ function setup() {
     input.input(() => {
         rebuildWorld(input.value());
     });
+    label.position(825, 90);
+    input.position(55, 0);
 
-    let seedLabel = createP("Current Seed: " + currentSeed);
-    // seedLabel.html("Current Seed: " + currentSeed);
+    // let seedSlider = createSlider(-99999999, 99999999, random(1, 100) * random(1, 100));
+    // seedSlider.position(400, 820);
+    // fill(0);
+
+    let seedLabel = createP();
+    seedLabel.html("THE SEED IS A LIE:    . . .      just hit reroll :)");
     seedLabel.parent("container"); 
+
+    let instructions = createP("Use the reroll button :) \n rotate button is funky, use your mouse to move around");
+    instructions.position(825, 40);
 
     createButton('reroll').mousePressed(() => rebuildWorld(currentSeed));
     createButton('rotate').mousePressed(() => numCam++);
     
-    xPosSlider = createSlider(-1000, 1000, 0);
-    xPosSlider.position(900, 40);
-    fill(0);
+    // xPosSlider = createSlider(-1000, 1000, 0);
+    // xPosSlider.position(900, 40);
+    // fill(0);
 
-    yPosSlider = createSlider(-1000, 1000, 500);
-    yPosSlider.position(900, 70);
-    fill(0);
+    // yPosSlider = createSlider(-1000, 1000, 500);
+    // yPosSlider.position(900, 70);
+    // fill(0);
 
-    zPosSlider = createSlider(-1000, 1000, 500);
-    zPosSlider.position(900, 100);
-    fill(0);
+    // zPosSlider = createSlider(-1000, 1000, 500);
+    // zPosSlider.position(900, 100);
+    // fill(0);
 
-    cx = createSlider(-1000, 1000, 0);
-    cx.position(900, 130);
-    fill(0);
+    // cx = createSlider(-1000, 1000, 0);
+    // cx.position(900, 130);
+    // fill(0);
 
-    cy = createSlider(-1000, 1000, 0);
-    cy.position(900, 160);
-    fill(0);
+    // cy = createSlider(-1000, 1000, 0);
+    // cy.position(900, 160);
+    // fill(0);
 
-    cz = createSlider(-1000, 1000, 0);
-    cz.position(900, 190);
-    fill(0);
+    // cz = createSlider(-1000, 1000, 0);
+    // cz.position(900, 190);
+    // fill(0);
 
     tileX = [];
     tileY = [];
@@ -104,10 +119,19 @@ function setup() {
     movingCar = [];
     a = 0;
     b = 0;
+    tileCounter = 0;
+
+    // let fps = frameRate();
+    // fill(255);
+    // stroke(0);
+    // textFont(myFont);
+    // text("FPS: " + fps.toFixed(2), 1000, 220);
     
 
     // createP("Arrow keys scroll. Clicking changes tiles.").parent("container");
     rebuildWorld(input.value());
+
+    // noLoop();
 }
 
 function rebuildWorld(key) {
@@ -118,43 +142,52 @@ function rebuildWorld(key) {
 
     rand = Math.random();
     currentSeed = rand.toString().substr(2, 8);
-    console.log(currentSeed);
   }
 
 function draw() {
     randomSeed(seed);
     orbitControl();
-    cam1.lookAt(0, 0, 0);
+
     if (numCam === 0) {
+        cam1.lookAt(0, 0, 0);
         setCamera(cam1);
     } else if (numCam === 1) {
+        cam2.lookAt(0, 0, 0);
         setCamera(cam2);
     } else if (numCam === 2) {
+        cam3.lookAt(0, 0, 0);
         setCamera(cam3);
     }else if (numCam === 3) {
+        cam4.lookAt(0, 0, 0);
         setCamera(cam4);
     } else if (numCam === 4) {
+        cam5.lookAt(0, 0, 0);
         setCamera(cam5);
     } else {
         numCam = 0;
     }
     
-
-    background("#e685ef");
     stroke(0);
     fill("#4F3107")
+    background("#E8869A");
     push();
     translate(0, 0, -50);
     box(1000, 400, 100);
+    fill("#222222");
+    translate(0, 0, -25);
+    box(1050, 450, 100);
     pop();
-  
+
     
     for (let i = -20; i <= 20; i+= 1) {
         for (let k = -50; k <= 50; k+= 1) {
-            fillPlane(k * tileSize, i * tileSize);
+            if (i === 20 && k === 50) {
+                break;
+            } else {
+                fillPlane(k * tileSize, i * tileSize);
+            }
         }
     }
-
 }
 
     function fillPlane(x, y) {
@@ -194,15 +227,7 @@ function draw() {
                     tileY.push(y);
                 } 
                 else {
-                    stroke(255); 
-                    fill("#FF0000");
-                    translate(x + a, y + b, tileSize * 3 / 4);
-                    let jriver = box(tileSize / 2, tileSize / 2, tileSize / 2);
-                    // if (tileX.includes(x)) {
-                    //     b = b - 1;
-                    // } else if (tileY.includes(y)) {
-                    //     a = a - 1;
-                // }
+                    createDriver(x, y);
                 }
             } else 
 
@@ -251,6 +276,7 @@ function draw() {
                         translate(x, y, scaler / 2);
                         box(tileSize, tileSize, scaler);
 
+                        // random pyramid hat
                         if (random() < 0.3) {
                         rotateX(HALF_PI);
                         rotateY(QUARTER_PI);
@@ -265,11 +291,11 @@ function draw() {
                         translate(x, scaler / 2, y);
                         cylinder(tileSize / 2, scaler, 8, 1);
 
+                        // random dome spawn
                         if (random() < 0.3) {
                             translate(0, scaler / 2, 0);
                         sphere(tileSize/2, 4, 4)
                         }
-                        
                     }
                 }
             } else { 
@@ -296,29 +322,64 @@ function draw() {
                 // ground
                 noStroke();
                 if (x > 440 || x < -440 || y > 160 || y < -160) {
+                    // outside grass
                     fill("#2A6A01");
                     scaler = -8;
                 } else if (x > 340 || x < -340 || y > 100 || y < -100){
+                    // transition layer
                     if (random() < 0.5) {
+                        // solid concrete
                         fill("#292f33");
                     } else {
+                        // grass gradient
                         fill(0, random(25, 180), 0, random(200, 255));
                     }
                     scaler = 2;
                 } else {
+                    // grass gradient
                     fill(0, random(25, 180), 0, random(200, 255));
                     scaler = 8;
                 }
                 translate(x, y, scaler * noise(x, y));
                 
                 box(tileSize, tileSize, tileSize);
-
-                
-             
             }
         }
-        }
-
-        pop();
     }
+    pop();
+}
+
+function createDriver(x, y) {
+    stroke(255); 
+    fill("#FF0000");
+    translate(x, y, tileSize * 3 / 4);
+    let jriver = box(tileSize / 2, tileSize / 2, tileSize / 2);
+    // 
+    // broken code for now . . . (7/21/2022)
+    //
+    let randomizer = random(0, 4);
+    if (tileX.includes(x) && !tileY.includes(y)) {
+        if (randomizer < 3) {
+            b += 0.2;
+        } else if (randomizer >= 3) {
+            b -= 0.2;
+        }
+    } else if (tileY.includes(y) && !tileX.includes(x)) {
+        if (randomizer < 3) {
+            a += 0.2;
+        } else if (randomizer >= 3) {
+            a -= 0.2;
+        }
+    } else {
+        if (randomizer === 1) {
+            a += 0.2;
+        } else if (randomizer === 2) {
+            a -= 0.2;
+        } else if (randomizer === 3) {
+            b += 0.2;
+        } else if (randomizer === 4) {
+            b -= 0.2;
+        }
+    }
+}
 
